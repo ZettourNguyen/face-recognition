@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import math
 import time
+import imutils
 
 
 def face_confidence(face_distance, face_math_threshold=0.6):
@@ -38,10 +39,14 @@ class FaceRecognition:
         print(self.know_face_names)
 
     def run_recognition(self):
-        video_capture = cv2.VideoCapture(0)
-
+        video_capture = cv2.VideoCapture(1)
+        video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 876)
+        video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 496)
+        video_capture.set(cv2.CAP_PROP_FPS, 60)
         if not video_capture.isOpened():
             sys.exit('Video source not found...')
+
+        set_face = set()
 
         while True:
             ret, frame = video_capture.read()
@@ -80,15 +85,15 @@ class FaceRecognition:
                 cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
                 cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), -1)
                 cv2.putText(frame, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 1)
-                # face_name = name.split('.')[0].strip()
-
-
-
+                face_name = name.split('.')[0].strip()
+                if (face_name) not in set_face:
+                    set_face.add(face_name)
+                    print(set_face)
+            #         return face name in here
 
             cv2.imshow('Face Recognition', frame)
 
             if cv2.waitKey(1) == ord('q'):
-                print(printed_names)
                 break
 
         video_capture.release()
